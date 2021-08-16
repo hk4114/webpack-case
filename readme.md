@@ -1,10 +1,8 @@
 # webpack 基础
 
 ```bash
-# 局部安装
-npm i -D webpack
-# 安装webpack V4+版本时，需要额外安装webpack-cli
-npm i -D webpack-cli
+# 局部安装 安装webpack V4+版本时，需要额外安装webpack-cli
+npm i -D webpack webpack-cli
 # npx帮助我们在项⽬中的node_modules⾥查找webpack
 npx webpack -v
 ```
@@ -45,5 +43,9 @@ bundle chunk module 三者联系
 
 coder -> module -> webpack deal -> chunks 代码片段 -> bundle 
 
+### 项目
+- 工具类
+  + .npmrc 设置国内源
+  + 安装依赖包 切换国内源 npm config 
 
 [详细](./webpack.config.js)
