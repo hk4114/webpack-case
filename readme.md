@@ -47,5 +47,14 @@ coder -> module -> webpack deal -> chunks 代码片段 -> bundle
 - 工具类
   + .npmrc 设置国内源
   + 安装依赖包 切换国内源 npm config 
+  + less npm i less less-loader -D
+  + postcss   npm i postcss-loader postcss -D 
+    + cnpm i autoprefixer -D
+  + 单独的css文件 mini-css-extract-plugin
+  + hash 代码改变 hash 改变 output [name]-[hash:6].js -> 即使是小改动也会造成整个项目里的文件名变化
+  + content hash 自身内容变化才会更新 filename: [name]-[contenthash:6].css <- mini-css...
+  + chunkhash 影响范围只有 同一个chunk -> module 内有引用关系
+  + 自定义loader -> myLoaders [webpack loader api](https://webpack.docschina.org/api/loaders/)
+    + resolveLoader 
 
 [详细](./webpack.config.js)
