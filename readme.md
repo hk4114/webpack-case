@@ -1,4 +1,4 @@
-# webpack 基础
+# webpack
 
 > 起步 环境准备
 
@@ -17,7 +17,7 @@ npx webpack
 # registry=https://registry.npm.taobao.org
 ```
 
-## webpack 配置 
+## 1 webpack 配置 
 
 > 默认配置
 
@@ -39,7 +39,7 @@ webpack 的默认配置文件 `webpack.config.js`，通过修改该文件对打�
 
 [demo](./demo01)
 
-### entry 入口文件
+### 1.1 entry 入口文件
 
 ```js
 entry: './src/index.js', // 打包入口文件 简写 单入口 SPA
@@ -50,7 +50,7 @@ entry: {  // 多入口 entry 就是个对象
 },
 ```
 
-### output
+### 1.2 output
 Webpack 经过⼀系列处理并得出最终想要的代码后输出结果。
 
 ```js
@@ -61,19 +61,19 @@ path: path.resolve(__dirname, "dist"), // 输出文件到磁盘目录，必须�
 filename: '[name][hash:8].js', // hash chunkhash contenthash 
 path: path.resolve(__dirname, "dist")
 ```
-#### hash 
+#### 1.2.1 hash 
 
 代码改变 hash 改变 output [name]-[hash:6].js -> 即使是小改动也会造成整个项目里的文件名变化
 
 每一次构建后生成的哈希值都不一样，即使文件内容压根没有改变。
 
-#### chunkhash
+#### 1.2.2 chunkhash
 影响范围只有 同一个chunk -> module 内有引用关系.
 
 实现缓存效果，根据不同的入口文件(Entry)进行依赖文件解析、构建对应的 chunk 生成对应的哈希值。
 把一些公共库和程序入口文件区分开，只要我们不改动公共库的代码，就可以保证其哈希值不会受影响。就可以利用缓存。
 
-#### ontenthash 
+#### 1.2.3 ontenthash 
 自身内容变化才会更新 filename: [name]-[contenthash:6].css <- mini-css...
 
 即使index.css被index.js引用了，只要css文件所处的模块里就算其他文件内容改变，只要css文件内容不变，那么不会重复构建。
@@ -95,7 +95,7 @@ new miniCssExtractPlugin({ // 将css单独打包成一个文件的插件
 }),
 ```
 
-### mode
+### 1.3 mode
 |    选项     | 描述                                                                                               |
 | :---------: | :------------------------------------------------------------------------------------------------- |
 |    none     | 退出任何默认优化选项                                                                               |
@@ -105,13 +105,13 @@ new miniCssExtractPlugin({ // 将css单独打包成一个文件的插件
 
 ⽣产阶段的开启会有帮助模块压缩，处理副作⽤等⼀些功能
 
-### module
+### 1.4 module
 > [demo](./demo01)
 
 Webpack 会从配置的 Entry 开始递归找出所有依赖的模块。
 当webpack处理到不认识的模块时，需要在webpack中的module处进⾏配置，当检测到是什么格式的模块，使⽤什么loader来处理。
 
-### loader
+### 1.5 loader
 > [demo02](./demo02/webpack.config.js)
 webpack 默认处理js和JSON模块，其他格式的模块处理，和处理⽅式则需要
 loader。本质就是把模块原内容按照需求转换成新内容。
@@ -140,7 +140,7 @@ module.exports = {
 }
 ```
 
-#### 编写一个loader
+#### 1.5.1 编写一个loader
 > [官⽅⽂档](https://webpack.js.org/contribute/writing-a-loader/) [接⼝⽂档](https://webpack.js.org/api/loaders/)
 
 > [myLoader](./demo02/myLoaders/replace-loader.js)
@@ -196,14 +196,14 @@ use: [
 ] 
 ```
 
-### plugins
+### 1.6 plugins
 > [demo](./demo01/webpack.config.js)
 
 plugin 可以在webpack运⾏到某个阶段的时候，帮你做⼀些事情，类似于⽣命周期的概念扩展插件，在 Webpack 构建流程中的特定时机注⼊扩展逻辑来改变构建结果或做你想要的事情。
 
 比如 HtmlWebpackPlugin 会在打包结束后，⾃动⽣成⼀个html⽂件，并把打包⽣成的js模块引⼊到该html中。
 
-### bundle chunk module 三者联系
+### 1.7 bundle chunk module 三者联系
 - chunk  代码片段 模块文件被webpack处理之后 entry[key] -> chunk name
 - module
 - bundle 输出的资源文件
@@ -213,7 +213,7 @@ plugin 可以在webpack运⾏到某个阶段的时候，帮你做⼀些事情，
 
 coder -> module -> webpack deal -> chunks 代码片段 -> bundle 
 
-### sourceMap
+### 1.8 sourceMap
 
 ```json
 devtool:"cheap-module-eval-source-map",// 开发环境配置
@@ -238,3 +238,184 @@ devServer: {
   port: 8080
 },
 ```
+
+## 2 webpack 项目
+> [demo03](./demo03)
+### 2.1 webpack-dev-server 自动更新 
+webpack-dev-server 实现自动更新
+
+> `npm install webpack-dev-server -D`
+
+```json
+"scripts": {
+  "serve": "webpack-dev-server"
+},
+```
+
+```js
+// webpack.config.js
+devServer: {
+  contentBase: "./dist",
+  open: true,
+  port: 8081
+},
+```
+
+### mock 数据
+#### 安装 
+`npm i express -D`
+
+#### 配置
+```js
+// 新建 server.js
+const express = require('express');
+
+const app = express();
+
+app.get('/api/info.json', (req, res)=> {
+  res.json({
+    name: 'kane',
+    age: 5,
+    msg: 'success'
+  })
+})
+
+app.listen('9092')
+
+// package.json
+"scripts": {
+  "server": "node server.js"
+}
+
+// src/index.js
+import axios from 'axios';
+
+axios.get('http://localhost:9092/api/info.json').then(res => {
+  console.log(res, 'sign')
+})
+```
+启动后端服务 以及 前端项目。
+```sh
+node server.js
+webpack-dev-server
+```
+
+url 输入 `http://localhost:9092/api/info.json` 可以看到服务结果，但是前端里面提示`CORS` 跨域。
+
+#### 本地 mock, 解决跨域
+```js
+// webpack.config.js
+{
+  'devServer.proxy': {
+    '/api': {
+      target: 'http://localhost:9092'
+    }
+  }
+}
+// index.js 删除 http://localhost:9092
+```
+
+### HMR 热模块替换
+> [hotCss](./demo03/src/hotCss.js)
+
+css 抽离不会生效，不支持 contenthash，chunkhash
+
+```js
+// webpack.config.js
+const webpack = require("webpack");
+
+plugins: [
+  new webpack.HotModuleReplacementPlugin()
+]
+
+devServer: {
+  hot: true,
+  hotOnly: true,
+}
+```
+
+处理 JS 模块 HMR 则需要使用 module.hot.accept 监听模块更新
+
+
+### babel
+js 编译器。babel 在执行编译过程中，首先读取 `.babelrc` JSON 文件中的配置，如果没有则会从 `loader.options` 中读取配置。
+
+#### 基础使用
+- 安装 `npm i babel-loader @babel/core @babel/preset-env -D`
+- 配置 
+```js
+// webpack.config.js module.rules
+{
+  test: /\.js$/,
+  exclude: /node_modules/,
+  use: {
+    loader: "babel-loader",
+    options: {
+      presets: ["@babel/preset-env"]
+    }
+  }
+}
+```
+默认 babel 只支持 let 等一些基础的特性转换，Promise 等新特性的转换需要其他插件的支持，例如 @babel/polyfill @babel/plugin-transform-runtime。
+
+
+#### @babel/polyfill
+> 不适合开发组件库或者工具库，挂载在全局 window 下，污染全局环境。
+
+`npm i @babel/polyfill -S`
+
+在入口顶部引入包 `import "@babel/polyfill";`
+
+由于polyfill默认把所有特性注入，为了减少体积，我们需要通过配置 `useBuiltIns` 实现按需加载。
+
+```json
+// create new file .babelrc
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "edge": "17",
+          "firefox": "60",
+          "chrome": "67",
+          "safari": "11.1"
+        },
+        "corejs": 2, // 新版本需要指定核心库版本
+        "useBuiltIns": "usage" 
+        // entry 入口文件中引入 import "@babel/polyfill" 根据使用情况倒入垫片
+        // usage 不需要import,全自动检测，需要安装 @babel/polyfill
+        // false 全量加载
+      }
+    ],
+    "@babel/preset-react"
+  ]
+}
+```
+但是在开发组件库或者工具库的时候，由于polyfill挂载在window下，污染了全局环境。
+
+#### @babel/plugin-transform-runtime
+> 通过闭包方式，不会造成全局污染
+
+```sh
+npm i @babel/plugin-transform-runtime -D
+npm i @babel/runtime -S
+```
+
+```json
+// .babelrc 不需要设置 presets
+{
+  "plugins": [
+    [
+    "@babel/plugin-transform-runtime",
+    {
+      "absoluteRuntime": false,
+      "corejs": false,
+      "helpers": true,
+      "regenerator": true,
+      "useESModules": false
+    }]
+  ]
+}
+```
+
