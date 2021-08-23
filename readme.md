@@ -387,8 +387,7 @@ js 编译器。babel 在执行编译过程中，首先读取 `.babelrc` JSON 文
         // usage 不需要import,全自动检测，需要安装 @babel/polyfill
         // false 全量加载
       }
-    ],
-    "@babel/preset-react"
+    ]
   ]
 }
 ```
@@ -419,3 +418,17 @@ npm i @babel/runtime -S
 }
 ```
 
+#### react
+`npm install react react-dom --S`
+
+babel JSX 编译需要新包支持
+
+`npm install --save-dev @babel/preset-react`
+
+```json
+// .babelrc
+"presets": [
+  // ...
+  "@babel/preset-react"
+]
+```
