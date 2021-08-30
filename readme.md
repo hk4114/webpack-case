@@ -418,6 +418,8 @@ npm i @babel/runtime -S
 }
 ```
 
+> externals 通过配置该项，可以在打包时不把项目的共同依赖给打进来。
+
 #### react
 `npm install react react-dom --S`
 
@@ -431,4 +433,104 @@ babel JSX 编译需要新包支持
   // ...
   "@babel/preset-react"
 ]
+```
+
+## webpack 构建优化
+> 优化开发体验 优化输出质量
+
+[demo04](./demo04)
+
+
+### 缩小文件范围
+优化loader配置
+- test include exclude三个配置项来缩⼩小loader的处理理范围
+- 推荐include
+
+`include: path.resolve(__dirname, './src'),`
+
+通过这种方式缩小文件loader数量。
+
+### 优化resolve.alias配置
+resolve.alias配置通过别名来将原导⼊入路路径映射成⼀一个新的导⼊入路路径
+
+```js
+alias: {
+  "@": path.join(__dirname, "./pages")
+}
+```
+
+### 优化resolve.extensions配置
+extensions在导⼊入语句句没带⽂文件后缀时，webpack会⾃自动带上后缀后，去尝试查找⽂文件是否存在。
+
+`extensions:['js','json','jsx','ts']`
+
+后缀尝试列列表尽量量的小，导入语句尽量的带上后缀
+
+### 优化resolve.modules配置
+寻找第三⽅方模块，默认是在当前项⽬目⽬目录下的node_modules⾥里里⾯面去找，如果没有找到，就会去上⼀一级⽬目录../node_modules找，再没有会去../../node_modules中找，以此类推，和Node.js的模块寻找机制很类似。
+如果我们的第三⽅方模块都安装在了了项⽬目根⽬目录下，就可以直接指明这个路路径。
+
+```js
+module.exports = {
+  resolve: {
+    modules: [path.resolve(__dirname, './node_modules')],
+    alias: {
+      "@": path.join(__dirname, "./pages")
+    },
+    extensions: ['js','json','jsx','ts']
+  }
+}
+```
+
+### 使⽤用静态资源路路径publicPath(CDN)
+接入CDN，需要把网页的静态资源上传到CDN服务上，在访问这些资源时，使⽤用CDN服务提供的URL。
+
+```js
+// ##webpack.config.js
+output:{
+  publicPath: '//cdnURL.com', //指定存放JS文件的CDN地址
+}
+```
+
+
+### css文件的处理(分离)
+- 1.2.3 ontenthash 
+- 1.5 loader
+
+### 压缩css
+`npm i cssnano optimize-css-assets-webpack-plugin -D`
+
+```js
+// webpack.config.js
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+
+plugins: [
+  // code
+  new OptimizeCSSAssetsPlugin({
+    cssProcessor: require('cssnano'), // 引入cssnano配置压缩选项
+    cssProcessorOptions: {
+      discardComments: {
+        removeAll: true
+      }
+    }
+  }),
+  // code
+]
+```
+
+### 压缩 html
+``
+```js
+// webpack.config.js
+new htmlWebpackPlugin({
+  title: "demo",
+  template: "./index.html",
+  filename: "index.html",
+  minify: {
+    // 压缩html文件
+    removeComments: true, // 移除注释
+    collapseWhitespace: true, // 删除空白符和换行符
+    minifyCSS: true // 压缩行内css
+  }
+})
 ```
