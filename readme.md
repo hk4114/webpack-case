@@ -261,11 +261,11 @@ devServer: {
 },
 ```
 
-### mock 数据
-#### 安装 
+### 2.2 mock 数据
+#### 2.2.1 安装 
 `npm i express -D`
 
-#### 配置
+#### 2.2.2 配置
 ```js
 // 新建 server.js
 const express = require('express');
@@ -302,7 +302,7 @@ webpack-dev-server
 
 url 输入 `http://localhost:9092/api/info.json` 可以看到服务结果，但是前端里面提示`CORS` 跨域。
 
-#### 本地 mock, 解决跨域
+#### 2.2.3 本地 mock, 解决跨域
 ```js
 // webpack.config.js
 {
@@ -315,7 +315,7 @@ url 输入 `http://localhost:9092/api/info.json` 可以看到服务结果，但�
 // index.js 删除 http://localhost:9092
 ```
 
-### HMR 热模块替换
+### 2.3 HMR 热模块替换
 > [hotCss](./demo03/src/hotCss.js)
 
 css 抽离不会生效，不支持 contenthash，chunkhash
@@ -337,10 +337,10 @@ devServer: {
 处理 JS 模块 HMR 则需要使用 module.hot.accept 监听模块更新
 
 
-### babel
+### 2.4 babel
 js 编译器。babel 在执行编译过程中，首先读取 `.babelrc` JSON 文件中的配置，如果没有则会从 `loader.options` 中读取配置。
 
-#### 基础使用
+#### 2.4.1 基础使用
 - 安装 `npm i babel-loader @babel/core @babel/preset-env -D`
 - 配置 
 ```js
@@ -359,7 +359,7 @@ js 编译器。babel 在执行编译过程中，首先读取 `.babelrc` JSON 文
 默认 babel 只支持 let 等一些基础的特性转换，Promise 等新特性的转换需要其他插件的支持，例如 @babel/polyfill @babel/plugin-transform-runtime。
 
 
-#### @babel/polyfill
+#### 2.4.2 @babel/polyfill
 > 不适合开发组件库或者工具库，挂载在全局 window 下，污染全局环境。
 
 `npm i @babel/polyfill -S`
@@ -393,7 +393,7 @@ js 编译器。babel 在执行编译过程中，首先读取 `.babelrc` JSON 文
 ```
 但是在开发组件库或者工具库的时候，由于polyfill挂载在window下，污染了全局环境。
 
-#### @babel/plugin-transform-runtime
+#### 2.4.3 @babel/plugin-transform-runtime
 > 通过闭包方式，不会造成全局污染
 
 ```sh
@@ -420,7 +420,7 @@ npm i @babel/runtime -S
 
 > externals 通过配置该项，可以在打包时不把项目的共同依赖给打进来。
 
-#### react
+#### 2.4.4 react
 `npm install react react-dom --S`
 
 babel JSX 编译需要新包支持
@@ -435,13 +435,13 @@ babel JSX 编译需要新包支持
 ]
 ```
 
-## webpack 构建优化
+## 3 webpack 构建优化
 > 优化开发体验 优化输出质量
 
 [demo04](./demo04)
 
 
-### 缩小文件范围
+### 3.1 缩小文件范围
 优化loader配置
 - test include exclude三个配置项来缩⼩小loader的处理理范围
 - 推荐include
@@ -450,7 +450,7 @@ babel JSX 编译需要新包支持
 
 通过这种方式缩小文件loader数量。
 
-### 优化resolve.alias配置
+### 3.2 优化resolve.alias配置
 resolve.alias配置通过别名来将原导⼊入路路径映射成⼀一个新的导⼊入路路径
 
 ```js
@@ -459,14 +459,14 @@ alias: {
 }
 ```
 
-### 优化resolve.extensions配置
+### 3.3 优化resolve.extensions配置
 extensions在导⼊入语句句没带⽂文件后缀时，webpack会⾃自动带上后缀后，去尝试查找⽂文件是否存在。
 
 `extensions:['js','json','jsx','ts']`
 
 后缀尝试列列表尽量量的小，导入语句尽量的带上后缀
 
-### 优化resolve.modules配置
+### 3.4 优化resolve.modules配置
 寻找第三⽅方模块，默认是在当前项⽬目⽬目录下的node_modules⾥里里⾯面去找，如果没有找到，就会去上⼀一级⽬目录../node_modules找，再没有会去../../node_modules中找，以此类推，和Node.js的模块寻找机制很类似。
 如果我们的第三⽅方模块都安装在了了项⽬目根⽬目录下，就可以直接指明这个路路径。
 
@@ -482,7 +482,7 @@ module.exports = {
 }
 ```
 
-### 使⽤用静态资源路路径publicPath(CDN)
+### 3.5 使⽤用静态资源路路径publicPath(CDN)
 接入CDN，需要把网页的静态资源上传到CDN服务上，在访问这些资源时，使⽤用CDN服务提供的URL。
 
 ```js
@@ -493,11 +493,11 @@ output:{
 ```
 
 
-### css文件的处理(分离)
+### 3.6 css文件的处理(分离)
 - 1.2.3 ontenthash 
 - 1.5 loader
 
-### 压缩css
+### 3.7 压缩css
 `npm i cssnano optimize-css-assets-webpack-plugin -D`
 
 ```js
@@ -518,7 +518,7 @@ plugins: [
 ]
 ```
 
-### 压缩 html
+### 3.8 压缩 html
 ``
 ```js
 // webpack.config.js
@@ -535,7 +535,7 @@ new htmlWebpackPlugin({
 })
 ```
 
-### development vs Production模式区分打包
+### 3.9 development vs Production模式区分打包
 
 ```sh
 # 合并配置
