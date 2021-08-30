@@ -8,7 +8,8 @@ module.exports = {
   mode: "development",
   // entry: "./src/index.js",
   // entry: './src/hotCss.js',
-  entry: './src/babel-test.js',
+  // entry: './src/babel-test.js',
+  entry: './src/react-test.js',
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "[name].js"
