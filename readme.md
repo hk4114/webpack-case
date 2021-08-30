@@ -534,3 +534,30 @@ new htmlWebpackPlugin({
   }
 })
 ```
+
+### development vs Production模式区分打包
+
+```sh
+# 合并配置
+npm install webpack-merge -D
+# 环境变量的区分
+npm i cross-env -D
+```
+
+在 package.json 中配置命令脚本，传入参数：
+```json
+{
+  "merge-config": "cross-env NODE_ENV=production webpack --config ./webpack.merge.js"
+}
+
+//外部传⼊入变量量
+scripts: " --env.production"
+// webpack.config.js 获取
+// env && env.production
+```
+`webpack.merge.js` 通过 `process.env.NODE_ENV` 直接拿到参数。
+
+[webpack base](./demo04/webpack.base.js)
+[webpack dev](./demo04/webpack.dev.js)
+[webpack pro](./demo04/webpack.pro.js)
+[webpack merge](./demo04/webpack.merge.js)

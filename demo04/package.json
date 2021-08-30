@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "serve": "webpack-dev-server",
-    "dev": "webpack --config ./webpack.config.js"
+    "dev": "webpack --config ./webpack.config.js",
+    "merge": "cross-env NODE_ENV=production webpack --config ./webpack.merge.js"
   },
   "keywords": [],
   "author": "",
