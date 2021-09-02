@@ -561,3 +561,105 @@ scripts: " --env.production"
 [webpack dev](./demo04/webpack.dev.js)
 [webpack pro](./demo04/webpack.pro.js)
 [webpack merge](./demo04/webpack.merge.js)
+
+### tree shaking
+清除无用css,js
+`npm i glob-all purify-css purifycss-webpack --save-dev`
+
+```js
+// webpack.config.js
+const PurifyCSS = require('purifycss-webpack')
+const glob = require('glob-all')
+
+module.exports = {
+  optimization: {
+    usedExports: true // 哪些导出的模块使用，再做打包, 生产模式默认开启
+  },
+  plugins: [
+    // plugin 清除无用css
+    new PurifyCSS({
+      paths: glob.sync([
+        path.resolve(__dirname, './src/*.html'),
+        path.resolve(__dirname, './src/*.js'),
+      ])
+    }),
+  ]
+}
+```
+
+#### 副作用
+生产模式下会把没有使用(引用)的模块省略。所以在配置webpack摇树的同时，根据业务判断是否要在 package 中增加
+```json
+//package.json
+"sideEffects": false // 正常对所有模块进行 tree shaking
+
+"sideEffects": ['*.css','@babel/polyfill'] // 在数组里面排除不需要的tree shaking模块
+```
+
+### 代码分割
+打包完，所有页面只生成一个bundle.js
+引入一个体积较大的第三方包，会导致体积大，加载时间长，同时会造成业务逻辑变化，第三方工具也会改变。
+代码分割与webpack并没有直接关系，只不过webpack中提供了一种更加方便的方法。
+```js
+module.exports = {
+  optimization: {
+    splitChunks: {
+      chunks: 'all' // 所有 chunks 代码公共的部分分离出来成为一个单独的文件
+    }
+  },
+}
+
+// optimization splitChunks 全量
+{
+  chunks: 'async', // 同步 initial 异步 async 所有的模块有效 all
+  minSize: 30000, // 最小尺寸
+  maxSize: 0, // 对模块进行二次分割时使用，不推荐使用
+  minChunks: 1, // 打包生成chunk文件最少有几个chunk引用这个模块
+  maxAsyncRequests: 5, // 最大异步请求数量
+  maxInitialRequests: 3, // 最大初始化请求数，入口文件同步请求
+  automaticNameDelimiter: '~',// 打包分割符
+  name: true,// 打包的名称 除了布尔值还能接受一个函数
+  cacheGroups: { // 缓存组
+    venders: {
+      test: /[\\/]node_modules[\\/]/,
+      name: "vendor", // 要缓存的 分隔出来的 chunk 名称
+      priority: -10 // 缓存优先级 数字越大优先级越大
+    },
+    other: {
+      minChunks: 1,
+      name:"other",
+      minSize: 30000,
+      test: /react|lodash/, // 正则验证 符合就提取chunk
+      chunks: "initial", // 默认 async
+    },
+    default: {
+      minChunks: 2,
+      priority: -20,
+      reuseExistingChunk: true // 是否重用该chunk
+    }
+  }
+}
+```
+
+### DllPlugin 插件打包第三方库
+> `npm i add-asset-html-webpack-plugin`
+
+项目引入了很多第三方库，且基本不会更新，打包的时候分开打包来提升打包速度
+DllPlugin动态链接库插件就是：把网页依赖的基础模块抽离出来打包到Dll文件中，当需要倒入的模块存在Dll中，这个模块不会打包，而是直接去dll中获取。
+
+`"build:dll": "cross-env NODE_ENV=development webpack --config ./webpack.dll.config.js"`
+
+[webpack.dll.config.js](./demo04/webpack.dll.config.js)
+
+运行 `npm run build:dll` 进行单独打包。
+
+```js
+// webpack.config.js 
+// webpack.dll.config.js里面怎么写的，这里就怎么配
+new AddAssetHtmlWebpackPlugin({
+  filepath: path.resolve(__dirname, '../dll/react.dll.js')
+}),
+new webpack.DllReferencePlugin({
+  manifest: path.resolve(__dirname, '.', 'dll/react-manifest.json')
+}),
+```

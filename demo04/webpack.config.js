@@ -7,6 +7,12 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 const webpack = require("webpack");
 
+const AddAssetHtmlWebpackPlugin = require("add-asset-html-webpack-plugin");
+
+// Css tree shaking 
+const PurifyCSS = require('purifycss-webpack')
+const glob = require('glob-all')
+
 module.exports = {
   mode: "development",
   entry: "./src/index.js",
@@ -55,10 +61,20 @@ module.exports = {
     hotOnly: true,
     port: 8081
   },
+  // optimization: {
+  //   usedExports: true // 哪些导出的模块使用，再做打包
+  // },
   plugins: [
     new CleanWebpackPlugin(),
     new miniCssExtractPlugin({
       filename: 'css/[name].css'
+    }),
+    // 清除无用css
+    new PurifyCSS({
+      paths: glob.sync([
+        path.resolve(__dirname, './src/*.html'),
+        path.resolve(__dirname, './src/*.js'),
+      ])
     }),
     new OptimizeCSSAssetsPlugin({
       cssProcessor: require('cssnano'), // 引入cssnano配置压缩选项
@@ -78,6 +94,12 @@ module.exports = {
         collapseWhitespace: true, // 删除空白符和换行符
         minifyCSS: true // 压缩行内css
       }
+    }),
+    new AddAssetHtmlWebpackPlugin({
+      filepath: path.resolve(__dirname, '../dll/react.dll.js')
+    }),
+    new webpack.DllReferencePlugin({
+      manifest: path.resolve(__dirname, '.', 'dll/react-manifest.json')
     }),
     new webpack.HotModuleReplacementPlugin()
   ]
