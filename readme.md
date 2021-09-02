@@ -663,3 +663,44 @@ new webpack.DllReferencePlugin({
   manifest: path.resolve(__dirname, '.', 'dll/react-manifest.json')
 }),
 ```
+
+### happypack 并发执行任务
+> demo04 `npm i happypack -D`
+
+优化loader的处理时间
+```js
+const HappyPack = require("happypack");
+const happyThreadPool = HappyPack.ThreadPool({ size: 5 });
+
+rules: [
+  {
+    test: /\.js$/,
+    exclude: /node_modules/,
+    use: [
+      {
+       // 一个loader 对应一个id
+        loader: "happypack/loader?id=babel"
+      }
+    ],
+  },
+  {
+    test: /\.css$/,
+    include: path.resolve(__dirname, "./src"),
+    use: ["happypack/loader?id=css"]
+  }
+]
+
+plugins:[
+  new HappyPack({
+    // id 唯一标识符 代表当前happypack用来处理一类特定的文件
+    id: 'babel',
+    // 如何处理js文件 与loader配置一样
+    loaders: ['babel-loader?cacheDirectory'],
+    threadPool: happyThreadPool
+  }),
+  new HappyPack({
+    id: 'css',
+    loaders: ['style-loader', 'css-loader']
+  })
+]
+```

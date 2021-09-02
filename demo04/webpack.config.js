@@ -26,13 +26,12 @@ module.exports = {
         test: /\.css$/,
         include: path.resolve(__dirname, './src'),
         use: ["style-loader", "css-loader"],
-        
       },
       {
         test: /\.less$/,
         include: path.resolve(__dirname, './src'),
         use: [
-          miniCssExtractPlugin.loader, 
+          miniCssExtractPlugin.loader,
           "css-loader",
           'postcss-loader',
           'less-loader']
