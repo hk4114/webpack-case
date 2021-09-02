@@ -695,12 +695,42 @@ plugins:[
     // id 唯一标识符 代表当前happypack用来处理一类特定的文件
     id: 'babel',
     // 如何处理js文件 与loader配置一样
-    loaders: ['babel-loader?cacheDirectory'],
-    threadPool: happyThreadPool
+    loaders: ['babel-loader?cacheDirectory'], // 
+    threadPool: happyThreadPool,
   }),
   new HappyPack({
     id: 'css',
-    loaders: ['style-loader', 'css-loader']
+    loaders: ['style-loader', 'css-loader']，
+    // loaders: [{
+    //   loader: 'file-loader',
+    //   options: {
+    //     name: 'images/[name].[ext]'
+    //   }
+    // }],
+    thread: 2 // 子进程
   })
 ]
+```
+### 多入口打包配置通用方案
+> demo05 webpack.mpa.config.js
+
+
+
+### 文件监听
+轮询判断文件的最后编辑时间是否变化，某文件发生了变化。
+webpack 开启监听有两种
+```js
+// package.json
+scripts:{
+  "watch": "webpack --watch"
+}
+
+// webpack.config.js
+watch: true, // 默认false不开启
+watchOptions: {
+  ignored: /node_modules/,// 不监听的文件或者努力
+  aggregateTimeout: 300, // 监听变化延迟300ms再去执行
+  poll: 1000 // 通过轮询系统指定文件，判断文件是否发生变化
+}
+
 ```
