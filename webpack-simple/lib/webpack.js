@@ -9,20 +9,28 @@ module.exports = class webpack {
     this.entry = entry;
     this.output = output;
   }
-  run() {
+  parse(entryFile) {
     // 分析入口模块的依赖和内容
-    const content = fs.readFileSync(this.entry, 'utf-8');
+    const content = fs.readFileSync(entryFile, 'utf-8');
 
     const ast = parser.parse(content, {
       sourceType: 'module'
     })
 
+    // 保存依赖的路径信息
+    const dependencies = {};
+
     traverse(ast, {
       // 需要提炼的名称作为关键字
       ImportDeclaration({ node }) { // 引入
-        console.log(node.source.value)
+        const newPath = './' + path.join(path.dirname(entryFile), node.source.value)
+        dependencies[node.source.value] = newPath;
+       
       }
     })
-    // console.log(ast.program.body, 'sign')
+    console.log(dependencies)
+  }
+  run() {
+    this.parse(this.entry)
   }
 }

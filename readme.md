@@ -797,3 +797,24 @@ run() {
   // code
 }
 ```
+
+获取绝对路径，处理依赖信息
+```js
+parse(entryFile) {
+  // 分析入口模块的依赖和内容
+  const content = fs.readFileSync(entryFile, 'utf-8');
+  const ast = parser.parse(content, { sourceType: 'module' })
+  const dependencies = {};
+
+  traverse(ast, {
+    ImportDeclaration({ node }) {
+      const newPath = './' + path.join(path.dirname(entryFile), node.source.value)
+      dependencies[node.source.value] = newPath;
+    }
+  })
+  console.log(dependencies)
+}
+run() {
+  this.parse(this.entry)
+}
+```
