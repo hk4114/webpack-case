@@ -756,3 +756,44 @@ webpack_require 实现模块化，把代码都缓存在 installModules 里，代
 
 - 创建bundle文件
   + 内容: webpack 启动函数
+
+> 通过  `@babel/parser` 解析，生成抽象语法树，然后根据 AST 判断依赖与内容。 
+
+```js
+const fs = require('fs')
+const parser = require('@babel/parser')
+
+module.exports = class webpack {
+  constructor(options) {
+    const { entry, output } = options;
+    this.entry = entry;
+    this.output = output;
+  }
+  run() {
+    const content = fs.readFileSync(this.entry, 'utf-8');
+
+    const ast = parser.parse(content, {
+      sourceType: 'module'
+    })
+
+    console.log(ast.program.body)
+  }
+}
+```
+
+> 整个引入链非常长且多，如何遍历所有引入模块拿到路径？通过 `@babel/traverse` 提炼信息，遍历所有的引入模块
+
+```js
+const traverse = require('@babel/traverse').default;
+
+run() {
+  // code
+  traverse(ast, {
+    // 需要提炼的名称作为关键字
+    ImportDeclaration({ node }) { // 引入
+      console.log(node)
+    }
+  })
+  // code
+}
+```
