@@ -1,6 +1,6 @@
 module.exports = class webpack {
-  constructor() {
-
+  constructor(options) {
+    console.log(options, 'sign');// 打印 webpack 参数
   }
   run() {
 
