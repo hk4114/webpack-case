@@ -714,8 +714,6 @@ plugins:[
 ### 多入口打包配置通用方案
 > demo05 webpack.mpa.config.js
 
-
-
 ### 文件监听
 轮询判断文件的最后编辑时间是否变化，某文件发生了变化。
 webpack 开启监听有两种
@@ -734,3 +732,27 @@ watchOptions: {
 }
 
 ```
+
+## webpack 原理
+> webpack-simple
+
+
+通过分析dist的文件：
+webpack_require 实现模块化，把代码都缓存在 installModules 里，代码文件以对象传递进来，key是路径，value是包裹的代码字符串，并且代码内部require 都被替换成 webpack_require.
+
+- webpack 配置文件
+  + 入口
+  + 出口
+
+- 创建一个webpack类
+  + 读取配置，拿到入口文件
+  + 哪些是依赖
+    * 路径 并且需要处理
+  + 那些是内容
+    * 需要编译 es6 jsx 用 babel 编译处理，让浏览器直接执行
+  + 分析其他依赖模块(递归方式处理) 
+
+- 拿到对象数据结构
+
+- 创建bundle文件
+  + 内容: webpack 启动函数
