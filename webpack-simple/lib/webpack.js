@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default;
+const { transformFromAst } = require('@babel/core')
 
 module.exports = class webpack {
   constructor(options) {
@@ -25,12 +26,20 @@ module.exports = class webpack {
       ImportDeclaration({ node }) { // 引入
         const newPath = './' + path.join(path.dirname(entryFile), node.source.value)
         dependencies[node.source.value] = newPath;
-       
       }
     })
-    console.log(dependencies)
+    const code = transformFromAst(ast, null, {
+      presets: ['@babel/preset-env']
+    })
+    
+    return {
+      entryFile, // 文件名
+      dependencies, // 依赖
+      code // 内容
+    }
   }
   run() {
-    this.parse(this.entry)
+    const info = this.parse(this.entry)
+    console.log(info)
   }
 }

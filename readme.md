@@ -818,3 +818,17 @@ run() {
   this.parse(this.entry)
 }
 ```
+
+解析内容
+
+> 通过 @babel/core @babel/preset-env 编译处理
+
+```js
+const { transformFromAst } = require('@babel/core')
+parse(entryFile) {
+  const code = transformFromAst(ast, null, {
+    presets: ['@babel/preset-env']
+  })
+  console.log(code) // 函数内容 -> 通过 require 引入，所以需要处理下 require
+}
+```
