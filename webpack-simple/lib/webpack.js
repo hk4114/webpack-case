@@ -56,6 +56,36 @@ module.exports = class webpack {
       }
     }
 
-    console.log(this.modules)
+    // 数据转换 数组变成对象
+    const obj = {};
+    this.modules.forEach(item => {
+      obj[item.entryFile] = {
+        dependencies: item.dependencies,
+        code: item.code
+      }
+    })
+    this.file(obj)
+  }
+  file(code) {
+    // 通过生成文件目录地址, 文件内容生成文件
+    const filePath = path.join(this.output.path, this.output.filename);
+    const newCode = JSON.stringify(code);
+
+    const bundle = `(function(graph){
+      function require(module) {
+        function reRequire(relativePath) {
+          return require(graph[module].dependencies[relativePath])
+        }
+        var exports = {};
+        (function(require, exports, code) {
+          eval(code)
+        })(reRequire, exports, graph[module].code)
+        return exports;
+      }
+      require('${this.entry}')
+    })(${newCode})`
+
+    // 手动创建一个dist空目录
+    fs.writeFileSync(filePath, bundle, 'utf-8')
   }
 }
