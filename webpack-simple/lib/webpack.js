@@ -9,6 +9,8 @@ module.exports = class webpack {
     const { entry, output } = options;
     this.entry = entry;
     this.output = output;
+
+    this.modules = []
   }
   parse(entryFile) {
     // 分析入口模块的依赖和内容
@@ -31,7 +33,7 @@ module.exports = class webpack {
     const code = transformFromAst(ast, null, {
       presets: ['@babel/preset-env']
     })
-    
+
     return {
       entryFile, // 文件名
       dependencies, // 依赖
@@ -39,7 +41,21 @@ module.exports = class webpack {
     }
   }
   run() {
-    const info = this.parse(this.entry)
-    console.log(info)
+    // 分析入口模块 依赖和内容
+    const info = this.parse(this.entry);
+    this.modules.push(info)
+
+    // 分析所有依赖模块
+    for (let i = 0; i < this.modules.length; i++) {
+      const item = this.modules[i];
+      const { dependencies } = item;
+      if (dependencies) {
+        for (let k in dependencies) {
+          this.modules.push(this.parse(dependencies[k]))
+        }
+      }
+    }
+
+    console.log(this.modules)
   }
 }

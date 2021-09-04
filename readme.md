@@ -832,3 +832,29 @@ parse(entryFile) {
   console.log(code) // 函数内容 -> 通过 require 引入，所以需要处理下 require
 }
 ```
+
+分析其他依赖模块
+
+遍历依赖
+
+入口开始 -> 入口依赖路径 直接传给 parse
+```js
+run() {
+  // 分析入口模块 依赖和内容
+  const info = this.parse(this.entry);
+  this.modules.push(info)
+
+  // 分析所有依赖模块
+  for (let i = 0; i < this.modules.length; i++) {
+    const item = this.modules[i];
+    const { dependencies } = item;
+    if (dependencies) {
+      for (let k in dependencies) {
+        this.modules.push(this.parse(dependencies[k]))
+      }
+    }
+  }
+
+  console.log(this.modules)
+}
+```
