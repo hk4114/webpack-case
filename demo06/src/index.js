@@ -1,3 +1,3 @@
 import { add, minus } from './expo.js';
 
-console.log("add:" + add(1, 2))
+console.log("hello add:" + add(1, 2))

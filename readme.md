@@ -154,9 +154,11 @@ console.log('hello huakang')
 module.exports = function(source) {
   console.log(source, this, this.query);
   return source.replace('hello','shit')；
+  
   // 返回多值 this.callback
   const result = source.replace('hello', this.query.name);
   this.callback(null, result)
+  
   // 处理异步
   const callback = this.async()
   setTimeout(() => {
@@ -186,7 +188,9 @@ module.exports = function(source) {
   ]
 }
 ```
+
 可以通过配置 resolveLoader 简化写法
+
 ```js
 resolveLoader: {
   modules: ["node_modules", "./loader"]
@@ -202,6 +206,11 @@ use: [
 plugin 可以在webpack运⾏到某个阶段的时候，帮你做⼀些事情，类似于⽣命周期的概念扩展插件，在 Webpack 构建流程中的特定时机注⼊扩展逻辑来改变构建结果或做你想要的事情。
 
 比如 HtmlWebpackPlugin 会在打包结束后，⾃动⽣成⼀个html⽂件，并把打包⽣成的js模块引⼊到该html中。
+
+#### 自定义plugin
+> [文档](https://webpack.js.org/contribute/writing-a-plugin/)
+> demo06
+
 
 ### 1.7 bundle chunk module 三者联系
 - chunk  代码片段 模块文件被webpack处理之后 entry[key] -> chunk name

@@ -1,4 +1,5 @@
 const path = require('path');
+const copyrightwebpackplugin = require("./myPlugin/copyright-webpack-plugin");
 
 module.exports = {
   mode: 'development',
@@ -6,9 +7,11 @@ module.exports = {
   entry: './src/index.js',
 
   output: { 
-    filename: '[name][chunkhash:8].js',
+    filename: '[name].js',
     path: path.resolve(__dirname, "dist")
   },
 
-  plugins: []
+  plugins: [
+    new copyrightwebpackplugin({ name: "huakang" })
+  ]
 }
