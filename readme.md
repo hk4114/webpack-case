@@ -826,7 +826,7 @@ run() {
 ```js
 const { transformFromAst } = require('@babel/core')
 parse(entryFile) {
-  const code = transformFromAst(ast, null, {
+  const { code } = transformFromAst(ast, null, {
     presets: ['@babel/preset-env']
   })
   console.log(code) // 函数内容 -> 通过 require 引入，所以需要处理下 require

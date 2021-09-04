@@ -30,9 +30,10 @@ module.exports = class webpack {
         dependencies[node.source.value] = newPath;
       }
     })
-    const code = transformFromAst(ast, null, {
-      presets: ['@babel/preset-env']
-    })
+    
+    const { code } = transformFromAst(ast, null, {
+      presets: ["@babel/preset-env"]
+    });
 
     return {
       entryFile, // 文件名
