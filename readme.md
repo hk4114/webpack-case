@@ -101,6 +101,7 @@ new miniCssExtractPlugin({ // 将css单独打包成一个文件的插件
 |    none     | 退出任何默认优化选项                                                                               |
 | development | 将definePlugin中process.env.NODE_ENV的值设置为development,启用NamedChunksPlugin和NamedModulePlugin |
 | production  | 将definePlugin中process.env.NODE_ENV  设为    production                                           |
+
 开发阶段的开启会有利于热更新的处理，识别哪个模块变化
 
 ⽣产阶段的开启会有帮助模块压缩，处理副作⽤等⼀些功能
@@ -230,34 +231,18 @@ devtool:"cheap-module-eval-source-map",// 开发环境配置
 devtool:"cheap-module-source-map", // 线上⽣成配置
 ```
 
-#### WebpackDevServer 提升开发体验
-每次改完代码都需要重新打包⼀次，打开浏览器，刷新⼀次，很麻烦,我们可以安装使⽤webpackdevserver来改善这块的体验
-
-```
-npm install webpack-dev-server -D
-
-"scripts": {
-  "server": "webpack-dev-server"
-},
-
-// webpack.config.js
-devServer: {
-  contentBase: "./dist",
-  open: true,
-  port: 8080
-},
-```
-
 ## 2 webpack 项目
 > [demo03](./demo03)
 ### 2.1 webpack-dev-server 自动更新 
+每次改完代码都需要重新打包⼀次，打开浏览器，刷新⼀次，很麻烦,我们可以安装使⽤webpackdevserver来改善这块的体验。
+
 webpack-dev-server 实现自动更新
 
 > `npm install webpack-dev-server -D`
 
 ```json
 "scripts": {
-  "serve": "webpack-dev-server"
+  "server": "webpack-dev-server"
 },
 ```
 
@@ -303,7 +288,9 @@ axios.get('http://localhost:9092/api/info.json').then(res => {
   console.log(res, 'sign')
 })
 ```
+
 启动后端服务 以及 前端项目。
+
 ```sh
 node server.js
 webpack-dev-server
@@ -528,7 +515,6 @@ plugins: [
 ```
 
 ### 3.8 压缩 html
-``
 ```js
 // webpack.config.js
 new htmlWebpackPlugin({
@@ -545,7 +531,6 @@ new htmlWebpackPlugin({
 ```
 
 ### 3.9 development vs Production模式区分打包
-
 ```sh
 # 合并配置
 npm install webpack-merge -D
@@ -571,9 +556,8 @@ scripts: " --env.production"
 [webpack pro](./demo04/webpack.pro.js)
 [webpack merge](./demo04/webpack.merge.js)
 
-### tree shaking
-清除无用css,js
-`npm i glob-all purify-css purifycss-webpack --save-dev`
+### 3.10 tree shaking
+清除无用css,js `npm i glob-all purify-css purifycss-webpack --save-dev`
 
 ```js
 // webpack.config.js
@@ -596,7 +580,7 @@ module.exports = {
 }
 ```
 
-#### 副作用
+#### 3.10.1 副作用
 生产模式下会把没有使用(引用)的模块省略。所以在配置webpack摇树的同时，根据业务判断是否要在 package 中增加
 ```json
 //package.json
@@ -605,7 +589,7 @@ module.exports = {
 "sideEffects": ['*.css','@babel/polyfill'] // 在数组里面排除不需要的tree shaking模块
 ```
 
-### 代码分割
+### 3.11 代码分割
 打包完，所有页面只生成一个bundle.js
 引入一个体积较大的第三方包，会导致体积大，加载时间长，同时会造成业务逻辑变化，第三方工具也会改变。
 代码分割与webpack并没有直接关系，只不过webpack中提供了一种更加方便的方法。
@@ -650,7 +634,7 @@ module.exports = {
 }
 ```
 
-### DllPlugin 插件打包第三方库
+### 3.12 DllPlugin 插件打包第三方库
 > `npm i add-asset-html-webpack-plugin`
 
 项目引入了很多第三方库，且基本不会更新，打包的时候分开打包来提升打包速度
@@ -673,7 +657,7 @@ new webpack.DllReferencePlugin({
 }),
 ```
 
-### happypack 并发执行任务
+### 3.13 happypack 并发执行任务
 > demo04 `npm i happypack -D`
 
 优化loader的处理时间
@@ -720,12 +704,12 @@ plugins:[
   })
 ]
 ```
-### 多入口打包配置通用方案
+### 3.14 多入口打包配置通用方案
 > demo05 webpack.mpa.config.js
 
-### 文件监听
-轮询判断文件的最后编辑时间是否变化，某文件发生了变化。
-webpack 开启监听有两种
+### 3.15 文件监听
+轮询判断文件的最后编辑时间是否变化，某文件发生了变化。webpack 开启监听有两种
+
 ```js
 // package.json
 scripts:{
@@ -739,7 +723,6 @@ watchOptions: {
   aggregateTimeout: 300, // 监听变化延迟300ms再去执行
   poll: 1000 // 通过轮询系统指定文件，判断文件是否发生变化
 }
-
 ```
 
 ## webpack 原理
