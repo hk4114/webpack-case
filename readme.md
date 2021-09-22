@@ -439,7 +439,7 @@ babel JSX 编译需要新包支持
 
 ### 3.1 缩小文件范围
 优化loader配置
-- test include exclude三个配置项来缩⼩小loader的处理理范围
+- test include exclude三个配置项来缩小loader的处理范围
 - 推荐include
 
 `include: path.resolve(__dirname, './src'),`
@@ -447,7 +447,7 @@ babel JSX 编译需要新包支持
 通过这种方式缩小文件loader数量。
 
 ### 3.2 优化resolve.alias配置
-resolve.alias配置通过别名来将原导⼊入路路径映射成⼀一个新的导⼊入路路径
+resolve.alias配置通过别名来将原导⼊入路路径映射成⼀一个新的导入路路径
 
 ```js
 alias: {
@@ -463,8 +463,8 @@ extensions在导⼊入语句句没带⽂文件后缀时，webpack会⾃自动带
 后缀尝试列列表尽量量的小，导入语句尽量的带上后缀
 
 ### 3.4 优化resolve.modules配置
-寻找第三⽅方模块，默认是在当前项⽬目⽬目录下的node_modules⾥里里⾯面去找，如果没有找到，就会去上⼀一级⽬目录../node_modules找，再没有会去../../node_modules中找，以此类推，和Node.js的模块寻找机制很类似。
-如果我们的第三⽅方模块都安装在了了项⽬目根⽬目录下，就可以直接指明这个路路径。
+寻找第三⽅方模块，默认是在当前项目目录下的node_modules⾥里里⾯面去找，如果没有找到，就会去上一级目录../node_modules找，再没有会去../../node_modules中找，以此类推，和Node.js的模块寻找机制很类似。
+如果我们的第三方模块都安装在项目根目录下，就可以直接指明这个路径。
 
 ```js
 module.exports = {
@@ -896,4 +896,84 @@ file(code) {
   // 手动创建一个dist空目录
   fs.writeFileSync(filePath, bundle, 'utf-8')
 }
+```
+
+## webpack 常用配置
+```js
+const path = require('path');
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+
+module.exports = {
+  mode: 'development', // production development | none
+
+  externals: [],       // 通过配置该项，可以在打包时不把项目的共同依赖给打进来。
+  // entry: './src/index.js',       // 打包入口文件 简写 单入口 SPA
+  entry: {                          // 多入口 entry 就是个对象
+    main: './src/index.js',
+    login: './src/module_a.js'
+  },
+
+  output: {                         // 输出结构
+    // filename: 'main.js', // 输出文件名 占位符写法 -> [name].js
+    // path: path.resolve(__dirname, "dist"), // 输出文件到磁盘目录，必须是绝对路径
+
+    // 多入口 
+    publicPath: '//cdnURL.com', // 指定存放JS文件的CDN地址
+    filename: '[name][chunkhash:8].js',
+    path: path.resolve(__dirname, "dist")
+  },
+
+  module: {
+    // 模块 Webpack 会从配置的 Entry 开始递归找出所有依赖的模块。
+    // 当 webpack 处理到不认识的模块时，需要在 webpack 中的 module 处进⾏配置，当检测到是什么格式的模块，使⽤什么 loader 来处理。
+    rules: [ // loader 模块处理 ⽤于把模块原内容按照需求转换成新内容
+      {
+        test: /\.css$/,
+        include: path.resolve(__dirname, './src'), // 缩小文件范围 也可以是数组
+        use: [{ // use 使⽤⼀个loader可以⽤对象，字符串，两个 loader 需要⽤数组
+          loader: "style-loader",
+          options: { // loader 参数
+            injectType: "singletonStyleTag" // 将所有的style标签合并成⼀个
+          }
+        }, "css-loader"]
+      }
+    ]
+  },
+  plugins: [ 
+    // 插件配置
+    // plugin 可以在webpack运⾏到某个阶段的时候，帮你做⼀些事情，类似于⽣命周期的概念扩展插件
+    // 在 Webpack 构建流程中的特定时机注⼊扩展逻辑来改变构建结果或做你想要的事情。作⽤于整个构建过程
+    new HtmlWebpackPlugin({ 
+      title: "My App",
+      filename: "app.html",
+      template: "./src/index.html"
+    })
+  ],
+  devtool: "inline-source-map", // "cheap-module-eval-source-map" 开发环境配置 线上不推荐开启 "cheap-module-source-map" 线上⽣成配置
+  devServer: { // npm install webpack-dev-server -D
+    contentBase: path.resolve(__dirname, "./dist"),
+    open: true,
+    hot: true, // HMR 热模块替换
+    hotOnly: true, 
+    port: 8081,
+    proxy: { // 配置跨域
+      "/api": {
+        target: "http://localhost:9092"
+      }
+    }
+  },
+  resolve: {
+    modules: [path.resolve(__dirname, './node_modules')], // 如果第三方模块都安装在项目根目录下，就可以直接指明这个路径。而不是一层层去找
+    alias: { // resolve.alias 配置通过别名来将原导入路径映射成一个新的导入路径
+      "@": path.join(__dirname, "./pages")
+    },
+    extensions: ['js','json','jsx','ts'] // 在导入语句没带文件后缀时，webpack会自动带上后缀，去尝试查找文件是否存在。
+  },
+  optimization: { // 代码分割
+    splitChunks: {
+      chunks: 'all' // 所有 chunks 代码公共的部分分离出来成为一个单独的文件
+    }
+  }
+}
+
 ```
